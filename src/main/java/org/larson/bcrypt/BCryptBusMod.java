@@ -32,9 +32,6 @@ public class BCryptBusMod extends BusModBase {
     super.start();
 
     this.address = getOptionalStringConfig("address", "bcrypt");
-    String hashed = BCrypt.hashpw("password", BCrypt.gensalt());
-    System.out.println(hashed);
-    System.out.println(address);
 
     hashHandler = new Handler<Message<JsonObject>>() {
       public void handle(Message<JsonObject> message) {
@@ -55,11 +52,10 @@ public class BCryptBusMod extends BusModBase {
 
   private void doHash(Message<JsonObject> message){
     String password = getMandatoryString("password", message);
-    System.out.println(password);
-    if (password == null){
+    if (password == null | password == ""){
+      sendStatus("error", message);
       return;
     }
-    //BCrypt bcrypt = new BCrypt();
     String hashed = BCrypt.hashpw("password", BCrypt.gensalt());
     JsonObject reply = new JsonObject().putString("hashed", hashed);
     sendOK(message, reply);
@@ -67,14 +63,16 @@ public class BCryptBusMod extends BusModBase {
   private void doCheck(Message<JsonObject> message){
     String password = getMandatoryString("password", message);
     String hashed = getMandatoryString("hashed", message);
-    System.out.println(password + "," + hashed);
-    if (password == null | hashed == null){
+    JsonObject reply = new JsonObject();
+    if (password == null | hashed == null | password == "" | hashed == ""){
+      sendStatus("error", message);
       return;
     }
     if (BCrypt.checkpw(password, hashed)){
-	    sendOK(message);
+	    reply.putString("match", true);
     } else {
-	    sendStatus("no match", message);
+	    reply.putString("match", false);
     }
+    sendOK(message, reply);
   }
 }
