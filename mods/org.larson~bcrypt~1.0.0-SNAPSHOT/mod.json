@@ -1,3 +1,4 @@
 {
-  "main":"app.js"
+  "main":"org.larson.bcrypt.BCryptBusMod",
+  "worker":true
 }
