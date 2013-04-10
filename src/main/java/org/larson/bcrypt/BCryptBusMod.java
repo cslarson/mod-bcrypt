@@ -69,9 +69,9 @@ public class BCryptBusMod extends BusModBase {
       return;
     }
     if (BCrypt.checkpw(password, hashed)){
-	    reply.putString("match", true);
+	    reply.putBoolean("match", true);
     } else {
-	    reply.putString("match", false);
+	    reply.putBoolean("match", false);
     }
     sendOK(message, reply);
   }
